@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador ACPC - Módulo 1</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for animations and transitions */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans flex flex-col min-h-screen">
+
+    <!-- Encabezado fijo superior -->
+    <header class="fixed top-0 w-full bg-blue-900 text-white p-4 shadow-lg z-50 transition-all duration-300">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <h1 class="text-xl md:text-2xl font-bold tracking-wide">
+                <span class="text-blue-300">CertiProf</span> | Simulador ACPC
+            </h1>
+            <div class="hidden md:block text-sm font-light text-blue-200">
+                Módulo 1: Fundamentos y Liderazgo Lean-Agile
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal (con padding para compensar el header y footer fijos) -->
+    <main class="flex-grow flex items-center justify-center p-4 pt-24 pb-24">
+        
+        <!-- PANTALLA DE INICIO -->
+        <div id="start-screen" class="bg-white p-8 rounded-xl shadow-xl max-w-2xl w-full text-center fade-in">
+            <div class="mb-6 flex justify-center">
+                <div class="bg-blue-100 p-4 rounded-full">
+                    <svg class="w-16 h-16 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                </div>
+            </div>
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-4">Simulador ACPC - Módulo 1</h2>
+            <p class="text-lg text-gray-600 mb-8 font-light">Fundamentos del Agile Coaching y Liderazgo Lean-Agile</p>
+            <div class="bg-gray-50 p-4 rounded-lg text-left mb-8 border border-gray-200">
+                <h3 class="font-semibold text-gray-700 mb-2">Instrucciones:</h3>
+                <ul class="list-disc pl-5 text-gray-600 text-sm space-y-1">
+                    <li>El simulacro consta de 10 preguntas.</li>
+                    <li>Lee cuidadosamente cada pregunta y selecciona la mejor respuesta.</li>
+                    <li>Recibirás retroalimentación teórica inmediata tras cada elección.</li>
+                    <li>Diseñado para consolidar tus conocimientos de certificación.</li>
+                </ul>
+            </div>
+            <button onclick="startSimulator()" class="w-full md:w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+                Iniciar Simulacro
+            </button>
+        </div>
+
+        <!-- PANTALLA DE PREGUNTAS -->
+        <div id="question-screen" class="bg-white p-6 md:p-8 rounded-xl shadow-xl max-w-3xl w-full hidden fade-in">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <span class="text-sm font-semibold text-blue-600 uppercase tracking-wider">Simulación en progreso</span>
+                <span id="progress-indicator" class="text-sm font-bold bg-blue-100 text-blue-800 py-1 px-3 rounded-full">
+                    Pregunta 1 de 10
+                </span>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+                <div id="progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: 10%"></div>
+            </div>
+
+            <h3 id="question-text" class="text-xl md:text-2xl font-bold text-gray-800 mb-6 leading-relaxed">
+                <!-- La pregunta se inyecta aquí -->
+            </h3>
+
+            <div id="options-container" class="space-y-3 mb-6">
+                <!-- Las opciones se inyectan aquí -->
+            </div>
+
+            <!-- Contenedor de Feedback -->
+            <div id="feedback-container" class="hidden p-5 rounded-lg border shadow-sm mb-6 fade-in">
+                <div class="flex items-center mb-2">
+                    <span id="feedback-icon" class="mr-2"></span>
+                    <h4 id="feedback-title" class="text-lg font-bold"></h4>
+                </div>
+                <p id="feedback-explanation" class="text-gray-700 text-sm leading-relaxed"></p>
+            </div>
+
+            <div class="flex justify-end mt-4 border-t pt-4">
+                <button id="next-btn" onclick="nextQuestion()" disabled class="px-6 py-2.5 bg-gray-300 text-gray-500 font-semibold rounded-lg cursor-not-allowed transition duration-300 flex items-center">
+                    Siguiente Pregunta
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- PANTALLA FINAL -->
+        <div id="end-screen" class="bg-white p-8 rounded-xl shadow-xl max-w-2xl w-full text-center hidden fade-in">
+            <div id="result-icon-container" class="mb-6 flex justify-center">
+                <!-- Icono de resultado se inyecta aquí -->
+            </div>
+            <h2 id="result-title" class="text-3xl font-extrabold text-gray-900 mb-2">¡Simulacro Finalizado!</h2>
+            <p class="text-xl text-gray-600 mb-6">Obtuviste <span id="final-score" class="font-bold text-blue-600 text-2xl"></span> de <span id="total-questions" class="font-bold text-gray-800 text-2xl"></span> puntos posibles.</p>
+            
+            <div id="result-message" class="bg-gray-50 p-4 rounded-lg text-gray-700 text-center mb-8 border border-gray-200 font-medium">
+                <!-- Mensaje de aliento según puntaje -->
+            </div>
+
+            <button onclick="resetSimulator()" class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full md:w-auto">
+                Reiniciar Simulador
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Pie de página fijo obligatorio -->
+    <footer class="fixed bottom-0 w-full bg-gray-900 text-gray-300 p-4 text-center text-sm z-50">
+        <div class="max-w-4xl mx-auto">
+            Elaborado por Mg. Daniel F. Medina | <a href="https://www.youtube.com/@DanielMCoach?sub_confirmation=1" target="_blank" class="underline text-blue-400 hover:text-blue-300 transition-colors"></a>
+        </div>
+    </footer>
+
+    <!-- Lógica de la Aplicación -->
+    <script>
+        const questionsData = [
+            {
+                question: "¿Qué es un Agile Coach?",
+                options: ["a) Un líder de proyectos.", "b) Un líder de transformación.", "c) Un líder catalizador.", "d) Todas las anteriores."],
+                answer: 2,
+                explanation: "El AC no es un gestor de proyectos directivo, sino un líder catalizador que empodera a personas y organizaciones en entornos VUCA."
+            },
+            {
+                question: "La diferencia entre un Agile Coach y un director de proyectos es que el primero se concentra en que los objetivos del proyecto se alcancen de forma eficiente y efectiva, mientras que el segundo en el desarrollo de las personas.",
+                options: ["a) Cierto.", "b) Falso."],
+                answer: 1,
+                explanation: "Está invertido. El Project Manager se enfoca en los entregables y objetivos tácticos, mientras que el Agile Coach prioriza el desarrollo humano y la transformación cultural."
+            },
+            {
+                question: "Ser un Agile Coach significa:",
+                options: ["a) Tener conciencia, deseo, conocimiento, capacidades y reforzar su pensamiento Agile.", "b) Utilizar y aplicar las técnicas de Agile Coaching.", "c) Ser un agente de cambio comprometido con el cambio.", "d) Ninguna de las anteriores."],
+                answer: 0,
+                explanation: "'Ser' Agile Coach implica interiorizar el mindset (pensamientos, creencias y acciones congruentes) para actuar con inteligencia emocional y adaptabilidad."
+            },
+            {
+                question: "El camino del Agile comienza siendo Scrum Master y concluye como Agile Coach en todos los casos:",
+                options: ["a) Cierto.", "b) Falso."],
+                answer: 1,
+                explanation: "El modelo de evolución demuestra que un AC puede originarse desde roles técnicos, gestión de proyectos o ser un experto organizacional; no es una línea rígida obligatoria."
+            },
+            {
+                question: "Las etapas del proceso de Agile Coaching son las mismas a nivel empresarial, de equipos e individual.",
+                options: ["a) Cierto.", "b) Falso."],
+                answer: 0,
+                explanation: "Aunque el impacto temporal y el número de involucrados varía, las tres etapas estructurales (Preparación, Ejecución, Cierre) se mantienen constantes en los tres niveles."
+            },
+            {
+                question: "¿Qué competencia se refiere a la capacidad de comprender y aplicar los valores, principios y prácticas agiles y lean para generar resultados de valor, manteniendo un equilibrio entre la operación y transformación continua?",
+                options: ["a) Facilitación", "b) Mentoring", "c) Liderazgo Lean Agile", "d) Enseñanza / Docencia"],
+                answer: 2,
+                explanation: "Es la definición técnica del Liderazgo Lean-Agile, una de las macrocompetencias del marco del Agile Coaching Institute."
+            },
+            {
+                question: "Son una serie de principios enfocados a eliminar todas las tareas que no aporten valor sobre aquello que estamos realizando.",
+                options: ["a) Lean.", "b) Agile.", "c) Scrum.", "d) Todas las anteriores."],
+                answer: 0,
+                explanation: "El origen de Lean se fundamenta en identificar y eliminar desperdicios en el flujo de valor."
+            },
+            {
+                question: "Con base al Manifiesto Ágil, entendemos que en los principios y prácticas ágiles sólo se pueden aplicar en entornos tecnológicos o relacionados a estos.",
+                options: ["a) Cierto.", "b) Falso.", "c) Depende del contexto."],
+                answer: 1,
+                explanation: "Cambiando la palabra 'software' por 'resultado de valor', la agilidad se implementa exitosamente hoy en Marketing, RRHH, Finanzas y logística."
+            },
+            {
+                question: "Hacer Agile Coaching se refiere al proceso mediante el cual se ayuda a los equipos e individuos a adoptar, adaptar y aplicar las prácticas ágiles con el propósito de mejorar los resultados.",
+                options: ["a) Cierto", "b) Falso"],
+                answer: 0,
+                explanation: "Separando el 'Ser' (mentalidad) del 'Hacer' (aplicación), el Hacer abarca el acompañamiento metodológico para mejorar y acelerar entregas."
+            },
+            {
+                question: "Estrictamente en el rol un Agile Coach puede ser consultor y asesor estratégico, si cuenta con la experiencia y la autoridad correspondiente.",
+                options: ["a) Cierto", "b) Falso"],
+                answer: 1,
+                explanation: "Un Agile Coach no asume el rol directivo de un consultor tradicional que impone soluciones. Su enfoque es empoderar a la organización para que encuentre su propio camino."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answered = false;
+
+        // Elements
+        const startScreen = document.getElementById('start-screen');
+        const questionScreen = document.getElementById('question-screen');
+        const endScreen = document.getElementById('end-screen');
+        
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const progressIndicator = document.getElementById('progress-indicator');
+        const progressBar = document.getElementById('progress-bar');
+        
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const feedbackExplanation = document.getElementById('feedback-explanation');
+        const feedbackIcon = document.getElementById('feedback-icon');
+        
+        const nextBtn = document.getElementById('next-btn');
+
+        // SVG Icons
+        const iconCorrect = `<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+        const iconIncorrect = `<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+        const iconSuccessLarge = `<div class="bg-green-100 p-4 rounded-full"><svg class="w-16 h-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>`;
+        const iconWarningLarge = `<div class="bg-yellow-100 p-4 rounded-full"><svg class="w-16 h-16 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>`;
+
+        function startSimulator() {
+            score = 0;
+            currentQuestionIndex = 0;
+            
+            startScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            questionScreen.classList.remove('hidden');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            answered = false;
+            const currentQ = questionsData[currentQuestionIndex];
+            
+            // Update UI
+            progressIndicator.innerText = `Pregunta ${currentQuestionIndex + 1} de ${questionsData.length}`;
+            progressBar.style.width = `${((currentQuestionIndex + 1) / questionsData.length) * 100}%`;
+            
+            questionText.innerText = currentQ.question;
+            
+            // Clear previous options
+            optionsContainer.innerHTML = '';
+            
+            // Create option buttons
+            currentQ.options.forEach((optionText, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-4 border-2 border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition duration-200 font-medium text-gray-700 bg-white shadow-sm focus:outline-none';
+                btn.innerText = optionText;
+                btn.onclick = () => selectOption(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+
+            // Hide feedback and disable next button
+            feedbackContainer.classList.add('hidden');
+            nextBtn.disabled = true;
+            nextBtn.className = 'px-6 py-2.5 bg-gray-300 text-gray-500 font-semibold rounded-lg cursor-not-allowed transition duration-300 flex items-center';
+        }
+
+        function selectOption(selectedIndex, clickedBtn) {
+            if (answered) return;
+            answered = true;
+
+            const currentQ = questionsData[currentQuestionIndex];
+            const isCorrect = selectedIndex === currentQ.answer;
+            const allButtons = optionsContainer.querySelectorAll('button');
+
+            // Disable all buttons and show styling
+            allButtons.forEach((btn, idx) => {
+                btn.disabled = true;
+                btn.classList.remove('hover:border-blue-400', 'hover:bg-blue-50', 'cursor-pointer');
+                
+                if (idx === currentQ.answer) {
+                    // Highlight correct answer
+                    btn.classList.remove('border-gray-200', 'text-gray-700');
+                    btn.classList.add('border-green-500', 'bg-green-50', 'text-green-800');
+                } else if (idx === selectedIndex && !isCorrect) {
+                    // Highlight selected incorrect answer
+                    btn.classList.remove('border-gray-200', 'text-gray-700');
+                    btn.classList.add('border-red-500', 'bg-red-50', 'text-red-800');
+                } else {
+                    // Fade out unselected/wrong answers
+                    btn.classList.add('opacity-50', 'bg-gray-50');
+                }
+            });
+
+            // Handle Score and Feedback content
+            feedbackContainer.classList.remove('hidden', 'bg-green-50', 'border-green-200', 'bg-red-50', 'border-red-200');
+            if (isCorrect) {
+                score++;
+                feedbackContainer.classList.add('bg-green-50', 'border-green-200');
+                feedbackTitle.innerText = "¡Correcto!";
+                feedbackTitle.className = "text-lg font-bold text-green-700";
+                feedbackIcon.innerHTML = iconCorrect;
+            } else {
+                feedbackContainer.classList.add('bg-red-50', 'border-red-200');
+                feedbackTitle.innerText = "Incorrecto";
+                feedbackTitle.className = "text-lg font-bold text-red-700";
+                feedbackIcon.innerHTML = iconIncorrect;
+            }
+
+            feedbackExplanation.innerText = currentQ.explanation;
+
+            // Enable next button
+            nextBtn.disabled = false;
+            nextBtn.className = 'px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300 flex items-center shadow-md transform hover:-translate-y-0.5';
+            
+            if (currentQuestionIndex === questionsData.length - 1) {
+                nextBtn.innerHTML = 'Ver Resultados <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
+            } else {
+                nextBtn.innerHTML = 'Siguiente Pregunta <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questionsData.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            questionScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('total-questions').innerText = questionsData.length;
+            
+            const resultMessage = document.getElementById('result-message');
+            const resultIconContainer = document.getElementById('result-icon-container');
+            const percentage = (score / questionsData.length) * 100;
+
+            if (percentage >= 80) {
+                resultMessage.innerText = "¡Excelente trabajo! Tienes una sólida comprensión de los Fundamentos y Liderazgo Lean-Agile. Estás en un buen camino hacia la certificación.";
+                resultMessage.className = "bg-green-50 p-4 rounded-lg text-green-800 text-center mb-8 border border-green-200 font-medium";
+                resultIconContainer.innerHTML = iconSuccessLarge;
+            } else if (percentage >= 60) {
+                resultMessage.innerText = "Buen intento. Sin embargo, te recomendamos repasar algunos conceptos teóricos sobre el rol del Agile Coach y la adopción de agilidad.";
+                resultMessage.className = "bg-yellow-50 p-4 rounded-lg text-yellow-800 text-center mb-8 border border-yellow-200 font-medium";
+                resultIconContainer.innerHTML = iconWarningLarge;
+            } else {
+                resultMessage.innerText = "Necesitas estudiar más. Revisa cuidadosamente la teoría de este módulo, los conceptos de VUCA y las responsabilidades del rol del Agile Coach.";
+                resultMessage.className = "bg-red-50 p-4 rounded-lg text-red-800 text-center mb-8 border border-red-200 font-medium";
+                resultIconContainer.innerHTML = iconWarningLarge; // Can be a red icon as well
+            }
+        }
+
+        function resetSimulator() {
+            startSimulator();
+        }
+    </script>
+</body>
+</html>
